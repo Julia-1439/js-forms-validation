@@ -89,8 +89,38 @@ const pwValidator = (() => {
   };
 })();
 
-emailValidator.init();
-pwValidator.init();
+const countryValidator = (() => {
+  const countryInput = doc.querySelector("#form-country");
+  const countryError = doc.querySelector("#form-country + .error-msg");
+
+  function init() {
+    countryInput.addEventListener("input", setErrorMsg);
+  }
+
+  function setErrorMsg() {
+    // no custom error validations; just use default
+    countryError.textContent = countryInput.validationMessage;
+  }
+
+  function handleFormSubmit() {
+    setErrorMsg();
+    const isValid = countryInput.reportValidity();
+    return isValid;
+  }
+
+  return {
+    init,
+    handleFormSubmit,
+  };  
+})();
+
+const inputValidators = [
+  emailValidator,
+  pwValidator,
+  countryValidator,
+];
+
+inputValidators.forEach((validator) => validator.init());
 form.addEventListener("submit", handleSubmit);
 
 function handleSubmit(evt) {
@@ -98,7 +128,6 @@ function handleSubmit(evt) {
   highFive.textContent = "";
 
   let formValid = true;
-  const inputValidators = [emailValidator, pwValidator];
   inputValidators.reverse(); // for `reportValidity` to report on the first invalid field
   for (const inputValidator of inputValidators) {
     const inputValid = inputValidator.handleFormSubmit();

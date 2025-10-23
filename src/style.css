@@ -1,9 +1,11 @@
 /* :user-invalid also works */
-input:invalid {
+input:invalid,
+select:invalid {
   background-color: pink;
 }
 
 
-input:valid {
+input:valid,
+select:valid {
   background-color: lightgreen;
 }
