@@ -1,0 +1,89 @@
+// sources of help
+// https://stackoverflow.com/questions/54926821/get-default-message-for-required-validation
+
+
+func createPasswordValidator() {
+  SET pwInput
+  SET pwConfInput
+  SET pwError
+  SET regExp = /[!@]/  // fill in the rest
+
+  func init()
+    ADD LISTENER "input" TO pwConfInput DOING
+      // @todo
+  
+  func getErrorMsg()
+    // criteria: >=8 length (html check), contains special char (js check), matches (js check)
+    SET pw TO pwInput.value
+    SET pwConf TO pwConfInput.value
+
+    IF (pw.length < 8)
+      RETURN pwInput.validationMessage // the default
+    ELSE IF (!regExp.test(pw))
+      RETURN "Password must contain a special character. (!, @, #, etc.)"
+    ELSE IF (pw !== pwConf)
+      RETURN "Passwords must match!"
+    ELSE // valid
+      RETURN ""
+
+  func isValid()
+    CALL getErrorMsg INTO errorMsg
+    RETURN true IF errorMsg is empty ELSE false
+  
+  func handleInput()
+
+
+}
+
+func createEmailValidator() {
+  SET emailInput
+  SET emailError
+  
+  func init()
+    ADD LISTENER "input" TO emailInput DOING 
+      CALL handleInput
+
+  func getErrorMsg()
+    // return a string based on what's wrong using emailInput.validity and if-else chain
+    // if it is valid, return empty string
+
+    IF !email.validity.valid
+      // you would add in custom validations here
+      RETURN email.validationMessage
+    ELSE // valid
+      RETURN ""
+
+  func handleInput()
+    CALL getErrorMsg INTO errorMsg
+    SET emailError.textContent TO errorMsg
+    CALL emailInput.setCustomValidity WITH errorMsg
+
+  func handleFormSubmit()
+    CALL handleInput
+    CALL emailInput.reportValidity INTO isValid // any custom err msg shows up here. if it all checks out, none
+    RETURN isValid
+  
+  RETURN {
+    init,
+    handleFormSubmit,
+  }
+}
+
+CALL createEmailValidator INTO emailValidator
+CALL emailValidator.init
+// ... 
+
+ADD LISTENER "submit" TO form DOING 
+  handleSubmit
+
+func handleSubmit(evt)
+	CALL evt.preventDefault
+
+  SET formValid TO true
+  FOR EACH input validator AS inputValidator
+    CALL inputValidator.handleFormSubmit INTO inputValid
+    IF NOT inputValid 
+      SET formValid TO false
+  
+  IF formValid
+    SET (#high-five).textContent TO "high five!"
