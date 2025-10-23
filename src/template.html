@@ -6,6 +6,27 @@
   <title>Document</title>
 </head>
 <body>
-  
+  <form action="post" novalidate>
+    <p>
+      <label for="form-email">Email</label>
+      <input type="email" name="email" id="form-email" required>
+      <span class="error-msg" aria-live="polite"></span>
+    </p>
+    <p>
+      <label for="form-pw">Password</label>
+      <input type="password" name="password" id="form-pw" required minlength="8">
+      <span class="error-msg" aria-live="polite"></span>
+    </p>
+    <p>
+      <label for="form-pw-confirm">Confirm Password</label>
+      <input type="password" id="form-pw-confirm" required>
+      <span class="error-msg" aria-live="polite"></span>
+    </p>
+    
+    <div>
+      <button type="submit">Submit</button>
+      <span id="high-five"></span>
+    </div>
+  </form>
 </body>
 </html>

@@ -1,0 +1,9 @@
+/* :user-invalid also works */
+input:invalid {
+  background-color: pink;
+}
+
+
+input:valid {
+  background-color: lightgreen;
+}
