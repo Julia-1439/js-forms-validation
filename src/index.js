@@ -3,7 +3,6 @@ import "./style.css";
 const doc = document;
 const form = doc.querySelector("form");
 const highFive = doc.querySelector("#high-five");
-
 const emailValidator = (() => {
   const emailInput = doc.querySelector("#form-email");
   const emailError = doc.querySelector("#form-email + .error-msg");
@@ -29,47 +28,33 @@ const emailValidator = (() => {
   };
 })();
 
-const pwValidator = (() => {
+const pwConfValidator = (() => {
   const pwInput = doc.querySelector("#form-pw");
   const pwConfInput = doc.querySelector("#form-pw-confirm");
-  const pwError = doc.querySelector("#form-pw + .error-msg");
   const pwConfError = doc.querySelector("#form-pw-confirm + .error-msg");
   const regExp = /[!@]/;
 
   function init() {
-    pwInput.addEventListener("input", () => {
-      setPwErrorMsg();
-      setPwConfErrorMsg();
-    });
-    pwConfInput.addEventListener("input", setPwConfErrorMsg);
+    pwConfInput.addEventListener("input", setErrorMsg);
   }
 
-  function setPwErrorMsg() {
-    pwInput.setCustomValidity(""); // reset previous custom message set
-    let errorMsg;
-
-    // important: list custom validation BEFORE checking the built-in validation
-    if (!regExp.test(pwInput.value)) {
-      errorMsg = "Password must contain either '!' or '@'.";
-      pwInput.setCustomValidity(errorMsg);
-    } else if (!pwInput.checkValidity()) {
-      errorMsg = pwInput.validationMessage;
-    } else {
-      errorMsg = "";
-    }
-
-    pwError.textContent = errorMsg;
-  }
-
-  function setPwConfErrorMsg() {
+  function setErrorMsg() {
     pwConfInput.setCustomValidity(""); // reset previous custom message set
     let errorMsg;
 
-    // important: list custom validation BEFORE checking the built-in validation
-    if (pwConfInput.value !== pwInput.value) {
+    if (pwConfInput.value !== pwInput.value) { // put this conditional first, since it's the most expected
       errorMsg = "Both passwords must match.";
       pwConfInput.setCustomValidity(errorMsg);
-    } else {
+    } 
+    // it is necessary to mirror the conditions of `pwInput` to prevent `pwConfInput` being marked valid when `pwInput` is not valid.
+    else if (!pwConfInput.checkValidity()) {
+      errorMsg = pwConfInput.validationMessage;
+    } 
+    else if (!regExp.test(pwConfInput.value)) {
+      errorMsg = "Password must contain either '!' or '@'.";
+      pwConfInput.setCustomValidity(errorMsg);
+    } 
+    else {
       errorMsg = "";
     }
 
@@ -77,9 +62,52 @@ const pwValidator = (() => {
   }
 
   function handleFormSubmit() {
-    setPwErrorMsg();
-    setPwConfErrorMsg();
-    const isValid = pwConfInput.reportValidity() && pwInput.reportValidity(); // the ordering here ensures pwInput is the one to be visibly reported on if both pwInput and pwConfInput are invalid.
+    setErrorMsg();
+    const isValid = pwConfInput.reportValidity();
+    return isValid;
+  }
+
+  return {
+    init,
+    setErrorMsg,
+    handleFormSubmit,
+  };
+})();
+
+// the dependency allows the confirm-password field to be validated at the same time as the regular password field (particularly important in the case of checking if they match)
+const pwValidator = ((confValidator) => {
+  const pwInput = doc.querySelector("#form-pw");
+  const pwError = doc.querySelector("#form-pw + .error-msg");
+  const regExp = /[!@]/;
+
+  function init() {
+    pwInput.addEventListener("input", () => {
+      setErrorMsg();
+      confValidator.setErrorMsg();
+    });
+  }
+
+  function setErrorMsg() {
+    pwInput.setCustomValidity(""); // reset previous custom message set
+    let errorMsg;
+
+    if (!pwInput.checkValidity()) {
+      errorMsg = pwInput.validationMessage;
+    } 
+    else if (!regExp.test(pwInput.value)) {
+      errorMsg = "Password must contain either '!' or '@'.";
+      pwInput.setCustomValidity(errorMsg);
+    } 
+    else {
+      errorMsg = "";
+    }
+
+    pwError.textContent = errorMsg;
+  }
+
+  function handleFormSubmit() {
+    setErrorMsg();
+    const isValid = pwInput.reportValidity();
     return isValid;
   }
 
@@ -87,7 +115,7 @@ const pwValidator = (() => {
     init,
     handleFormSubmit,
   };
-})();
+})(pwConfValidator);
 
 const countryValidator = (() => {
   const countryInput = doc.querySelector("#form-country");
@@ -111,16 +139,13 @@ const countryValidator = (() => {
   return {
     init,
     handleFormSubmit,
-  };  
+  };
 })();
 
-const inputValidators = [
-  emailValidator,
-  pwValidator,
-  countryValidator,
-];
-
-inputValidators.forEach((validator) => validator.init());
+emailValidator.init();
+pwValidator.init();
+pwConfValidator.init();
+countryValidator.init();
 form.addEventListener("submit", handleSubmit);
 
 function handleSubmit(evt) {
@@ -128,11 +153,17 @@ function handleSubmit(evt) {
   highFive.textContent = "";
 
   let formValid = true;
+  const inputValidators = [
+    emailValidator,
+    pwValidator,
+    pwConfValidator,
+    countryValidator,
+  ];
   inputValidators.reverse(); // for `reportValidity` to report on the first invalid field
-  for (const inputValidator of inputValidators) {
-    const inputValid = inputValidator.handleFormSubmit();
+  inputValidators.forEach((validator) => {
+    const inputValid = validator.handleFormSubmit();
     if (!inputValid) formValid = false;
-  }
+  });
 
   // simulate the data being submitted
   if (formValid) {

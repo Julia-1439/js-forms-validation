@@ -19,7 +19,7 @@
     </p>
     <p>
       <label for="form-pw-confirm">Confirm Password</label>
-      <input type="password" id="form-pw-confirm" required>
+      <input type="password" id="form-pw-confirm" required minlength="8">
       <span class="error-msg" aria-live="polite"></span>
     </p>
     <p>
@@ -27,12 +27,16 @@
       <select name="country" id="form-country" required>
         <option value=""></option>
         <option value="us">USA</option>
-        <option value="ch">China</option>
+        <option value="cn">China</option>
         <option value="vn">Vietnam</option>
       </select>
       <span class="error-msg" aria-live="polite"></span>
     </p>
-    
+    <p>
+      <label for="form-postal-code">Postal Code</label>
+      <input type="text" name="postalCode" id="form-postal-code">
+      <span class="error-msg" aria-live="polite"></span>
+    </p>
     <div>
       <button type="submit">Submit</button>
       <span id="high-five"></span>
