@@ -110,7 +110,6 @@ const pwConfValidator = (() => {
 
   return {
     init,
-    setErrorMsg,
     handleFormSubmit,
   };
 })();
