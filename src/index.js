@@ -12,13 +12,53 @@ const emailValidator = (() => {
   }
 
   function setErrorMsg() {
-    // no custom error validations; just use default
-    emailError.textContent = emailInput.validationMessage;
+    emailError.textContent = emailInput.validationMessage; // no custom error validations; just use default
   }
 
   function handleFormSubmit() {
     setErrorMsg();
     const isValid = emailInput.reportValidity();
+    return isValid;
+  }
+
+  return {
+    init,
+    handleFormSubmit,
+  };
+})();
+
+const pwValidator = (() => {
+  const pwInput = form.querySelector("#form-pw");
+  const pwError = form.querySelector("#form-pw + .error-msg");
+  const pwConfInput = form.querySelector("#form-pw-confirm");
+  const regExp = /[!@]/;
+
+  function init() {
+    pwInput.addEventListener("input", () => {
+      setErrorMsg();
+      pwConfInput.dispatchEvent(new CustomEvent("custom:pwInput"));
+    });
+  }
+
+  function setErrorMsg() {
+    pwInput.setCustomValidity(""); // reset previous custom message set
+    let errorMsg;
+
+    if (!pwInput.checkValidity()) {
+      errorMsg = pwInput.validationMessage;
+    } else if (!regExp.test(pwInput.value)) {
+      errorMsg = "Password must contain either '!' or '@'.";
+      pwInput.setCustomValidity(errorMsg);
+    } else {
+      errorMsg = "";
+    }
+
+    pwError.textContent = errorMsg;
+  }
+
+  function handleFormSubmit() {
+    setErrorMsg();
+    const isValid = pwInput.reportValidity();
     return isValid;
   }
 
@@ -74,47 +114,6 @@ const pwConfValidator = (() => {
   };
 })();
 
-const pwValidator = (() => {
-  const pwInput = form.querySelector("#form-pw");
-  const pwError = form.querySelector("#form-pw + .error-msg");
-  const pwConfInput = form.querySelector("#form-pw-confirm");
-  const regExp = /[!@]/;
-
-  function init() {
-    pwInput.addEventListener("input", () => {
-      setErrorMsg();
-      pwConfInput.dispatchEvent(new CustomEvent("custom:pwInput"));
-    });
-  }
-
-  function setErrorMsg() {
-    pwInput.setCustomValidity(""); // reset previous custom message set
-    let errorMsg;
-
-    if (!pwInput.checkValidity()) {
-      errorMsg = pwInput.validationMessage;
-    } else if (!regExp.test(pwInput.value)) {
-      errorMsg = "Password must contain either '!' or '@'.";
-      pwInput.setCustomValidity(errorMsg);
-    } else {
-      errorMsg = "";
-    }
-
-    pwError.textContent = errorMsg;
-  }
-
-  function handleFormSubmit() {
-    setErrorMsg();
-    const isValid = pwInput.reportValidity();
-    return isValid;
-  }
-
-  return {
-    init,
-    handleFormSubmit,
-  };
-})();
-
 const countryValidator = (() => {
   const countryInput = form.querySelector("#form-country");
   const countryError = form.querySelector("#form-country + .error-msg");
@@ -130,8 +129,7 @@ const countryValidator = (() => {
   }
 
   function setErrorMsg() {
-    // no custom error validations; just use default
-    countryError.textContent = countryInput.validationMessage;
+    countryError.textContent = countryInput.validationMessage; // no custom error validations; just use default
   }
 
   function handleFormSubmit() {
@@ -180,8 +178,7 @@ const postalValidator = (() => {
     const constraint = constraints[country];
     if (constraint === undefined) {
       errorMsg = "";
-    }
-    else if (!constraint.regExp.test(postalInput.value)) {
+    } else if (!constraint.regExp.test(postalInput.value)) {
       errorMsg = constraint.message;
       postalInput.setCustomValidity(errorMsg);
     } else {
