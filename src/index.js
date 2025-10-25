@@ -46,7 +46,7 @@ const pwValidator = (() => {
     pwInput.setCustomValidity(""); // reset previous custom message set
     let errorMsg;
 
-    if (!pwInput.checkValidity()) {
+    if (!pwInput.checkValidity()) { // since custom validity is reset, .checkValidity always just checks the vanilla HTML condition
       errorMsg = pwInput.validationMessage;
     } else if (!regExp.test(pwInput.value)) {
       errorMsg = "Password must contain either '!' or '@'.";
@@ -91,7 +91,7 @@ const pwConfValidator = (() => {
       pwConfInput.setCustomValidity(errorMsg);
     }
     // it is necessary to mirror the conditions of `pwInput` to prevent `pwConfInput` being marked valid when `pwInput` is not valid.
-    else if (!pwConfInput.checkValidity()) {
+    else if (!pwConfInput.checkValidity()) { // since custom validity is reset, .checkValidity always just checks the vanilla HTML condition
       errorMsg = pwConfInput.validationMessage;
     } else if (!regExp.test(pwConfInput.value)) {
       errorMsg = "Password must contain either '!' or '@'.";
@@ -174,15 +174,22 @@ const postalValidator = (() => {
   function setErrorMsg() {
     postalInput.setCustomValidity(""); // reset previous custom message set
     let errorMsg;
-    const country = countryInput.value;
 
+    const country = countryInput.value;
     const constraint = constraints[country];
-    if (constraint === undefined) {
-      errorMsg = "";
-    } else if (!constraint.regExp.test(postalInput.value)) {
+
+    if (!postalInput.checkValidity()) { // since custom validity is reset, .checkValidity always just checks the vanilla HTML condition
+      errorMsg = postalInput.validationMessage;
+    } 
+    else if (!country) {
+      errorMsg = "The country must be selected before entering a postal code."; 
+      postalInput.setCustomValidity(errorMsg);
+    }
+    else if (!constraint.regExp.test(postalInput.value)) {
       errorMsg = constraint.message;
       postalInput.setCustomValidity(errorMsg);
-    } else {
+    } 
+    else {
       errorMsg = "";
     }
 
