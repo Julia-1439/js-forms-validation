@@ -3,6 +3,7 @@ import "./style.css";
 const doc = document;
 const form = doc.querySelector("form");
 const highFive = form.querySelector("#high-five");
+
 const emailValidator = (() => {
   const emailInput = doc.querySelector("#form-email");
   const emailError = doc.querySelector("#form-email + .error-msg");
@@ -36,7 +37,8 @@ const pwValidator = (() => {
   function init() {
     pwInput.addEventListener("input", () => {
       setErrorMsg();
-      pwConfInput.dispatchEvent(new CustomEvent("custom:pwInput"));
+      if (pwConfInput)
+        pwConfInput.dispatchEvent(new CustomEvent("custom:pwInput"));
     });
   }
 
@@ -120,12 +122,11 @@ const countryValidator = (() => {
   const postalInput = form.querySelector("#form-postal-code");
 
   function init() {
-    countryInput.addEventListener("input", setErrorMsg);
-
-    if (postalInput)
-      countryInput.addEventListener("input", () => {
+    countryInput.addEventListener("input", () => {
+      setErrorMsg();
+      if (postalInput)
         postalInput.dispatchEvent(new CustomEvent("custom:countryInput"));
-      });
+    });
   }
 
   function setErrorMsg() {
