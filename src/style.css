@@ -1,6 +1,6 @@
-/* :user-invalid also works */
-input:user-invalid,
-select:user-invalid {
+/* :user-invalid also works, but :invalid was chosen to better complement the DOM error messages which appear as you type. */
+input:invalid,
+select:invalid {
   background-color: pink;
 }
 
