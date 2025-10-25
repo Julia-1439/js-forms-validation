@@ -6,7 +6,7 @@ note that removing `novalidate` prevents the DOM error messages from showing up,
 
 major concepts utilized:
 - Constraint Validation API for customizing error messages, disemminating form errors, and extending past the HTML built-in validations
-- OOP principles: decoupling, open-closed principle
+- OOP principles: decoupling, open-closed principle, dependency inversion
 
 Dev Setup
 
