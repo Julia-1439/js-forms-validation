@@ -2,7 +2,6 @@ import "./style.css";
 
 const doc = document;
 const form = doc.querySelector("form");
-const highFive = form.querySelector("#high-five");
 
 const emailValidator = (() => {
   const emailInput = doc.querySelector("#form-email");
@@ -217,6 +216,8 @@ form.addEventListener("submit", handleSubmit);
 
 function handleSubmit(evt) {
   evt.preventDefault();
+
+  const highFive = form.querySelector("#high-five");
   highFive.textContent = "";
 
   let formValid = true;
