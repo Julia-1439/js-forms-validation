@@ -36,6 +36,7 @@ const pwConfValidator = (() => {
 
   function init() {
     pwConfInput.addEventListener("input", setErrorMsg);
+    pwConfInput.addEventListener("custom:pwInput", setErrorMsg);
   }
 
   function setErrorMsg() {
@@ -73,17 +74,16 @@ const pwConfValidator = (() => {
   };
 })();
 
-// the dependency allows the confirm-password field to be validated at the same time as the regular password field (particularly important in the case of checking if they match)
-const pwValidator = ((_pwConfValidator) => {
+const pwValidator = (() => {
   const pwInput = form.querySelector("#form-pw");
   const pwError = form.querySelector("#form-pw + .error-msg");
+  const pwConfInput = form.querySelector("#form-pw-confirm");
   const regExp = /[!@]/;
 
-  // @todo change to use custom events for password confirmation
   function init() {
     pwInput.addEventListener("input", () => {
       setErrorMsg();
-      _pwConfValidator.setErrorMsg();
+      pwConfInput.dispatchEvent(new CustomEvent("custom:pwInput"));
     });
   }
 
@@ -113,7 +113,7 @@ const pwValidator = ((_pwConfValidator) => {
     init,
     handleFormSubmit,
   };
-})(pwConfValidator);
+})();
 
 const countryValidator = (() => {
   const countryInput = form.querySelector("#form-country");
